@@ -19,3 +19,42 @@ wget http://lvbu.cc/11.sh && bash 11.sh
 按回车，注意：中间有4个空格，http:后面的斜杠是从右往左，&不是$，.是英文句号
 
 6、一会之后矿机会自动重启，然后就可以在网站上控制你的矿机了
+
+11.sh内容如下：
+
+```shell
+#删除原mineros程序
+rm -rf /opt/mineros
+rm  /usr/bin/miner
+rm  /usr/bin/mostty-miner
+rm  /usr/bin/mostty
+rm  /usr/bin/mostty-gpu
+rm  /usr/bin/mostty-ip
+rm  -rf /etc/supervisor/conf.d
+
+#修改root密码为id，若未设置密码为123456
+mima=$(cat /config/123.txt)
+if [ "${mima}" == '' ];then
+   mima="123456"
+fi
+echo "root:${mima}" >> user.txt
+chpasswd < user.txt
+rm user.txt
+
+#允许ssh远程登陆，用户名root密码默认123456
+echo "
+Port 22
+PermitRootLogin yes
+PasswordAuthentication yes
+ChallengeResponseAuthentication no
+UsePAM yes
+X11Forwarding yes
+PrintMotd no
+Subsystem	sftp	/usr/lib/openssh/sftp-server
+PasswordAuthentication no
+" >> /etc/ssh/sshd-config
+service sshd restart
+
+#安装新程序
+#待续
+```
